@@ -1,11 +1,29 @@
+from typing import Sequence
 import numpy as np
 
-from activations import d_sig
 from losses import bin_cross_entropy_cost
+from layer import Layer
 
 
 class NeuralNetwork:
-    def __init__(self, layers):
+    """
+    Neural Network
+
+    NeuralNetwork trains a neural net with parameters (w_1, b_1, ... , w_n, b_n)
+    with n corresponding to the number of layers passed to __init__.
+
+    Parameters
+    ----------
+    layers: Iterable of type Layer
+        The layers of the neural network to be trained.
+
+    Attributes
+    ----------
+    _layers: Iterable of type Layer
+        The layers of the neural network
+    """
+
+    def __init__(self, layers: Sequence[Layer]):
         self._layers = layers
 
     def train(self, X, y, iters=10000, learning_rate=0.01):
@@ -28,7 +46,7 @@ class NeuralNetwork:
             # dz = a - y
             da = -(y / a) + ((1 - y) / (1 - a))
 
-            for layer in self._layers[::-1]:
+            for layer in reversed(self._layers):
                 da = layer.backward(da, learning_rate, y.shape[1])
                 # dz = da * d_sig(layer._a_prev)
 
